@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSHCO Health Data Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #14b8a6 0%, #8b5cf6 25%, #ec4899 50%, #f97316 75%, #eab308 90%, #22c55e 100%);
+        }
+        .card-shadow {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .stat-card {
+            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+            border-left: 4px solid;
+        }
+        .teal-border { border-left-color: #14b8a6; }
+        .purple-border { border-left-color: #8b5cf6; }
+        .pink-border { border-left-color: #ec4899; }
+        .orange-border { border-left-color: #f97316; }
+        .yellow-border { border-left-color: #eab308; }
+        .green-border { border-left-color: #22c55e; }
+        .brand-teal { color: #14b8a6; }
+        .brand-purple { color: #8b5cf6; }
+        .brand-pink { color: #ec4899; }
+        .brand-orange { color: #f97316; }
+        .brand-yellow { color: #eab308; }
+        .brand-green { color: #22c55e; }
+        .icon-large { font-size: 2.5rem; }
+        .health-impact-icon { font-size: 3rem; margin-bottom: 1rem; }
+        .strategic-icon { font-size: 2.8rem; margin-bottom: 1rem; }
+        .hardship-bar {
+            height: 20px;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hardship-excellent { background: linear-gradient(90deg, #22c55e, #16a34a); }
+        .hardship-good { background: linear-gradient(90deg, #84cc16, #65a30d); }
+        .hardship-moderate { background: linear-gradient(90deg, #eab308, #ca8a04); }
+        .hardship-poor { background: linear-gradient(90deg, #f97316, #ea580c); }
+        .hardship-severe { background: linear-gradient(90deg, #ef4444, #dc2626); }
+        .hardship-critical { background: linear-gradient(90deg, #dc2626, #991b1b); }
+        @media print {
+            body { -webkit-print-color-adjust: exact; color-adjust: exact; }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-8">
+        <div class="container mx-auto px-6">
+            <div class="text-center">
+                <h1 class="text-4xl font-bold mb-4">South Side Healthy Community Organization</h1>
+                <p class="text-xl mb-2">Health Data Dashboard</p>
+                <p class="text-lg opacity-90">Serving ~1 Million Residents Across 15 ZIP Codes</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mission Statement -->
+    <section class="py-8 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="text-center max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold mb-4 brand-purple">Our Mission</h2>
+                <p class="text-lg text-gray-700 leading-relaxed">
+                    The South Side Healthy Community Organization (SSHCO) is committed to improving health outcomes and reducing health disparities for residents of Chicago's South Side communities. Through collaborative partnerships with healthcare providers, community organizations, and residents, we work to address social determinants of health, expand access to quality healthcare services, and build a healthier, more equitable future for all South Side residents.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Health Impact Overview -->
+    <section class="py-12 bg-gray-100">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center mb-12 brand-teal">Health Impact Overview</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="stat-card teal-border p-6 rounded-lg card-shadow text-center">
+                    <i class="fas fa-heartbeat health-impact-icon brand-teal"></i>
+                    <h3 class="text-xl font-semibold mb-2">Life Expectancy Gap</h3>
+                    <p class="text-3xl font-bold brand-teal mb-2">11.4 Years</p>
+                    <p class="text-sm text-gray-600">Between Black and non-Black residents (2022 data)</p>
+                </div>
+                <div class="stat-card purple-border p-6 rounded-lg card-shadow text-center">
+                    <i class="fas fa-baby health-impact-icon brand-purple"></i>
+                    <h3 class="text-xl font-semibold mb-2">Infant Mortality</h3>
+                    <p class="text-3xl font-bold brand-purple mb-2">10x Higher</p>
+                    <p class="text-sm text-gray-600">Than affluent neighborhoods</p>
+                </div>
+                <div class="stat-card pink-border p-6 rounded-lg card-shadow text-center">
+                    <i class="fas fa-ambulance health-impact-icon brand-pink"></i>
+                    <h3 class="text-xl font-semibold mb-2">ER Visits</h3>
+                    <p class="text-3xl font-bold brand-pink mb-2">250%</p>
+                    <p class="text-sm text-gray-600">Above city average</p>
+                </div>
+                <div class="stat-card orange-border p-6 rounded-lg card-shadow text-center">
+                    <i class="fas fa-user-md health-impact-icon brand-orange"></i>
+                    <h3 class="text-xl font-semibold mb-2">Provider Shortage</h3>
+                    <p class="text-3xl font-bold brand-orange mb-2">100+</p>
+                    <p class="text-sm text-gray-600">Primary care providers needed</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Community Advisory Committee Support -->
+    <section class="py-12 bg-white">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center mb-8 brand-green">How the Community Advisory Committee Assists SSHCO</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="p-6 rounded-lg card-shadow stat-card green-border">
+                    <i class="fas fa-users icon-large brand-green mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-3">Community Engagement</h3>
+                    <p class="text-gray-700">Facilitate resident input and feedback on health initiatives and program development</p>
+                </div>
+                <div class="p-6 rounded-lg card-shadow stat-card teal-border">
+                    <i class="fas fa-bullhorn icon-large brand-teal mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-3">Advocacy Support</h3>
+                    <p class="text-gray-700">Champion policy changes and resource allocation to address health disparities</p>
+                </div>
+                <div class="p-6 rounded-lg card-shadow stat-card purple-border">
+                    <i class="fas fa-chart-line icon-large brand-purple mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-3">Program Oversight</h3>
+                    <p class="text-gray-700">Monitor program effectiveness and recommend improvements based on community needs</p>
+                </div>
+                <div class="p-6 rounded-lg card-shadow stat-card pink-border">
+                    <i class="fas fa-handshake icon-large brand-pink mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-3">Partnership Development</h3>
+                    <p class="text-gray-700">Connect SSHCO with community organizations and stakeholders for collaborative initiatives</p>
+                </div>
+                <div class="p-6 rounded-lg card-shadow stat-card orange-border">
+                    <i class="fas fa-graduation-cap icon-large brand-orange mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-3">Education & Outreach</h3>
+                    <p class="text-gray-700">Support health education programs and community awareness campaigns</p>
+                </div>
+                <div class="p-6 rounded-lg card-shadow stat-card yellow-border">
+                    <i class="fas fa-clipboard-check icon-large brand-yellow mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-3">Strategic Planning</h3>
+                    <p class="text-gray-700">Provide guidance on long-term strategic direction and priority setting</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ZIP Code Demographics -->
+    <section class="py-12 bg-gray-100">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center mb-8 brand-purple">Residents by ZIP Code</h2>
+            <div class="bg-white p-6 rounded-lg card-shadow">
+                <canvas id="zipCodeChart" style="height: 400px;"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Health Disparities -->
+    <section class="py-12 bg-white">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center mb-8 brand-pink">Key Health Disparities</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-red-50 p-6 rounded-lg card-shadow border-l-4 border-red-500">
+                    <h3 class="text-2xl font-bold text-red-700 mb-4">
+                        <i class="fas fa-exclamation-triangle mr-3"></i>
+                        Extreme Life Expectancy Gap
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="font-semibold">Englewood:</span>
+                            <span class="text-red-600 font-bold">~60 years</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="font-semibold">Streeterville:</span>
+                            <span class="text-green-600 font-bold">89-92 years</span>
+                        </div>
+                        <div class="border-t pt-3 mt-3">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-lg">Difference:</span>
+                                <span class="text-2xl font-bold text-red-700">30+ Years</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-blue-50 p-6 rounded-lg card-shadow border-l-4 border-blue-500">
+                    <h3 class="text-2xl font-bold text-blue-700 mb-4">
+                        <i class="fas fa-calculator mr-3"></i>
+                        ER Visit Economic Impact
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="font-semibold">National Average ER Cost:</span>
+                            <span class="text-blue-600 font-bold">$750</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="font-semibold">South Side ER Cost (250% above):</span>
+                            <span class="text-orange-600 font-bold">$2,625</span>
+                        </div>
+                        <div class="border-t pt-3 mt-3">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold">Annual Economic Burden:</span>
+                                <span class="text-2xl font-bold text-red-700">$47M+</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-2">Based on estimated 25,000+ excess ER visits annually</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Health Outcomes by Category -->
+    <section class="py-12 bg-gray-100">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center mb-12 brand-orange">Health Outcomes by Category</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="stat-card teal-border p-6 rounded-lg card-shadow">
+                    <i class="fas fa-heartbeat icon-large brand-teal mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-4">Maternal Health</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><strong>Severe Maternal Morbidity:</strong> 100+ per 10,000 deliveries</li>
+                        <li><strong>Prenatal Care:</strong> 40% receive inadequate care</li>
+                        <li><strong>Birth Outcomes:</strong> Higher rates of low birth weight</li>
+                    </ul>
+                </div>
+                <div class="stat-card purple-border p-6 rounded-lg card-shadow">
+                    <i class="fas fa-brain icon-large brand-purple mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-4">Mental Health</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><strong>ED Visits:</strong> 2.5x higher than city average</li>
+                        <li><strong>Provider Access:</strong> Limited mental health services</li>
+                        <li><strong>Community Impact:</strong> Affects all age groups</li>
+                    </ul>
+                </div>
+                <div class="stat-card pink-border p-6 rounded-lg card-shadow">
+                    <i class="fas fa-user-md icon-large brand-pink mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-4">Healthcare Access</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><strong>Primary Care:</strong> 100+ providers needed</li>
+                        <li><strong>OB Specialists:</strong> 60+ specialists needed</li>
+                        <li><strong>Residents Leaving Community for Care:</strong> 50%+</li>
+                    </ul>
+                </div>
+                <div class="stat-card orange-border p-6 rounded-lg card-shadow">
+                    <i class="fas fa-baby icon-large brand-orange mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-4">Infant Health</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><strong>Infant Mortality:</strong> 10x higher than affluent areas</li>
+                        <li><strong>Birth Weight:</strong> Higher rates of low birth weight</li>
+                        <li><strong>Immunizations:</strong> Lower vaccination rates</li>
+                    </ul>
+                </div>
+                <div class="stat-card yellow-border p-6 rounded-lg card-shadow">
+                    <i class="fas fa-heartbeat icon-large brand-yellow mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-4">Chronic Disease</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><strong>Diabetes:</strong> Higher prevalence rates</li>
+                        <li><strong>Hypertension:</strong> Increased occurrence</li>
+                        <li><strong>Heart Disease:</strong> Leading cause of mortality</li>
+                    </ul>
+                </div>
+                <div class="stat-card green-border p-6 rounded-lg card-shadow">
+                    <i class="fas fa-ambulance icon-large brand-green mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-4">Emergency Care</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><strong>ER Visit Rate:</strong> 250% above city average</li>
+                        <li><strong>Average Cost:</strong> $2,625 per visit</li>
+                        <li><strong>Preventable Visits:</strong> High percentage</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Social Determinants -->
+    <section class="py-12 bg-white">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center mb-8 brand-teal">Social Determinants of Health</h2>
+            <div class="max-w-6xl mx-auto">
+                <div class="bg-gradient-to-br from-yellow-50 to-orange-50 p-8 rounded-lg card-shadow border-l-4 border-yellow-500">
+                    <h3 class="text-3xl font-bold text-yellow-700 mb-6 text-center">
+                        <i class="fas fa-home mr-3"></i>
+                        Hardship Index Comparison
+                    </h3>
+                    
+                    <!-- Visual Hardship Index Chart -->
+                    <div class="bg-white p-6 rounded-lg mb-6 card-shadow">
+                        <canvas id="hardshipChart" style="height: 300px;"></canvas>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                        <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-500">
+                            <h4 class="text-lg font-semibold mb-2 text-green-700">Affluent Areas</h4>
+                            <p class="text-3xl font-bold text-green-600 mb-2">5-17</p>
+                            <div class="hardship-bar hardship-excellent mb-2" style="width: 17%;"></div>
+                            <p class="text-xs text-gray-600">Excellent conditions</p>
+                        </div>
+                        <div class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-500">
+                            <h4 class="text-lg font-semibold mb-2 text-yellow-700">National Average</h4>
+                            <p class="text-3xl font-bold text-yellow-600 mb-2">42</p>
+                            <div class="hardship-bar hardship-moderate mb-2" style="width: 42%;"></div>
+                            <p class="text-xs text-gray-600">Moderate conditions</p>
+                        </div>
+                        <div class="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-500">
+                            <h4 class="text-lg font-semibold mb-2 text-orange-700">Chicago Average</h4>
+                            <p class="text-3xl font-bold text-orange-600 mb-2">58</p>
+                            <div class="hardship-bar hardship-poor mb-2" style="width: 58%;"></div>
+                            <p class="text-xs text-gray-600">Poor conditions</p>
+                        </div>
+                        <div class="bg-red-50 p-4 rounded-lg border-l-4 border-red-500">
+                            <h4 class="text-lg font-semibold mb-2 text-red-700">SSHCO Communities</h4>
+                            <p class="text-3xl font-bold text-red-600 mb-2">70-91</p>
+                            <div class="hardship-bar hardship-critical mb-2" style="width: 91%;"></div>
+                            <p class="text-xs text-gray-600">Severe hardship</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg">
+                        <h4 class="text-xl font-bold mb-4 text-gray-800">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            Understanding the Hardship Index
+                        </h4>
+                        
+                        <div class="bg-blue-50 p-4 rounded-lg mb-4 border-l-4 border-blue-400">
+                            <h5 class="font-semibold text-blue-700 mb-2">What is the Hardship Index?</h5>
+                            <p class="text-sm text-gray-700">
+                                The Hardship Index is a standardized measure (0-100 scale) that quantifies socioeconomic conditions in communities by analyzing multiple demographic and economic indicators. Developed by sociologists and used by policymakers, it provides a comprehensive assessment of community well-being, with higher scores indicating greater economic distress and social challenges.
+                            </p>
+                        </div>
+
+                        <div class="bg-purple-50 p-4 rounded-lg mb-4 border-l-4 border-purple-400">
+                            <h5 class="font-semibold text-purple-700 mb-2">How is it Measured?</h5>
+                            <p class="text-sm text-gray-700 mb-3">
+                                The index combines six key socioeconomic indicators, each weighted equally and standardized to create a composite score:
+                            </p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                                <div>
+                                    <h6 class="font-medium text-purple-600">Economic Factors:</h6>
+                                    <ul class="text-gray-600 space-y-1 ml-2">
+                                        <li>• Unemployment rate (% adults without work)</li>
+                                        <li>• Per capita income levels</li>
+                                        <li>• Poverty rate (% below federal poverty line)</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h6 class="font-medium text-purple-600">Social Factors:</h6>
+                                    <ul class="text-gray-600 space-y-1 ml-2">
+                                        <li>• Educational attainment (% without high school diploma)</li>
+                                        <li>• Housing quality and overcrowding rates</li>
+                                        <li>• Access to transportation and services</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h5 class="font-semibold text-gray-700 mb-2">Score Interpretation:</h5>
+                                <ul class="text-sm text-gray-600 space-y-1">
+                                    <li><span class="inline-block w-3 h-3 bg-green-500 rounded mr-2"></span><strong>0-25:</strong> Low hardship (excellent conditions)</li>
+                                    <li><span class="inline-block w-3 h-3 bg-yellow-500 rounded mr-2"></span><strong>26-50:</strong> Moderate hardship</li>
+                                    <li><span class="inline-block w-3 h-3 bg-orange-500 rounded mr-2"></span><strong>51-75:</strong> High hardship</li>
+                                    <li><span class="inline-block w-3 h-3 bg-red-500 rounded mr-2"></span><strong>76-100:</strong> Extreme hardship (crisis conditions)</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold text-gray-700 mb-2">Health Impact Correlation:</h5>
+                                <ul class="text-sm text-gray-600 space-y-1">
+                                    <li>• <strong>Every 10-point increase</strong> correlates with 2-3 years reduced life expectancy</li>
+                                    <li>• Higher chronic disease rates (diabetes, hypertension)</li>
+                                    <li>• Increased emergency room utilization</li>
+                                    <li>• Poor birth outcomes and maternal health</li>
+                                    <li>• Limited healthcare access and preventive care</li>
+                                    <li>• Mental health and substance abuse challenges</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="mt-4 p-4 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
+                            <p class="text-sm text-gray-700">
+                                <strong>Critical Finding:</strong> SSHCO communities score 67% higher than the national average and 52% higher than Chicago's average, indicating severe economic hardship that directly correlates with poor health outcomes and reduced life expectancy. This data demonstrates the urgent need for comprehensive social and health interventions.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Strategic Initiatives -->
+    <section class="py-16 bg-gray-100">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-center mb-4 brand-purple">SSHCO Strategic Health Equity Initiatives</h2>
+            <p class="text-center text-gray-600 mb-12 text-lg max-w-4xl mx-auto">
+                Comprehensive, evidence-based strategies to eliminate health disparities and build sustainable community wellness across Chicago's South Side
+            </p>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Initiative 1: Access to Care -->
+                <div class="stat-card teal-border p-8 rounded-lg card-shadow bg-gradient-to-br from-teal-50 to-white">
+                    <div class="text-center mb-6">
+                        <i class="fas fa-heartbeat strategic-icon brand-teal"></i>
+                        <h3 class="text-2xl font-bold brand-teal mb-3">Expand Access to Care Through Integrated Models</h3>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-white p-4 rounded-lg border-l-4 border-teal-400">
+                            <h4 class="font-semibold text-gray-800 mb-2">
+                                <i class="fas fa-truck-medical mr-2 brand-teal"></i>
+                                Mobile Clinics & Pop-Up Health Events
+                            </h4>
+                            <p class="text-sm text-gray-700">Deploy mobile units or neighborhood pop-up clinics that offer primary care, preventive screenings (e.g., diabetes, hypertension, cancer), vaccinations, and mental health counseling in underserved areas.</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border-l-4 border-teal-400">
+                            <h4 class="font-semibold text-gray-800 mb-2">
+                                <i class="fas fa-laptop-medical mr-2 brand-teal"></i>
+                                Telehealth Equity
+                            </h4>
+                            <p class="text-sm text-gray-700">Ensure residents without reliable internet or devices can still access telehealth—possibly through community "digital health hubs" at libraries, schools, or churches.</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border-l-4 border-teal-400">
+                            <h4 class="font-semibold text-gray-800 mb-2">
+                                <i class="fas fa-brain mr-2 brand-teal"></i>
+                                Behavioral Health Integration
+                            </h4>
+                            <p class="text-sm text-gray-700">Embed mental and behavioral health into primary care settings to reduce stigma and improve holistic care.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Initiative 2: Social Determinants -->
+                <div class="stat-card purple-border p-8 rounded-lg card-shadow bg-gradient-to-br from-purple-50 to-white">
+                    <div class="text-center mb-6">
+                        <i class="fas fa-home strategic-icon brand-purple"></i>
+                        <h3 class="text-2xl font-bold brand-purple mb-3">Address Social Determinants of Health at the Core</h3>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-white p-4 rounded-lg border-l-4 border-purple-400">
+                            <h4 class="font-semibold text-gray-800 mb-2">
+                                <i class="fas fa-utensils mr-2 brand-purple"></i>
+                                Housing & Food Security Partnerships
+                            </h4>
+                            <p class="text-sm text-gray-700">Expand partnerships with food banks, urban farms, and housing organizations to address upstream health needs. Consider "food as medicine" initiatives where fresh produce is prescribed to patients.</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border-l-4 border-purple-400">
+                            <h4 class="font-semibold text-gray-800 mb-2">
+                                <i class="fas fa-briefcase mr-2 brand-purple"></i>
+                                Workforce & Economic Stability
+                            </h4>
+                            <p class="text-sm text-gray-700">Collaborate with local job training programs to connect healthcare access with career pathways—helping address unemployment while building trust in the health system.</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border-l-4 border-purple-400">
+                            <h4 class="font-semibold text-gray-800 mb-2">
+                                <i class="fas fa-bus mr-2 brand-purple"></i>
+                                Transportation Solutions
+                            </h4>
+                            <p class="text-sm text-gray-700">Partner with rideshare companies, community vans, or CTA to create free or low-cost health-related transport services for residents.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Initiative 3: Community Trust -->
+                <div class="stat-card pink-border p-8 rounded-lg card-shadow bg-gradient-to-br from-pink-50 to-white">
+                    <div class="text-center mb-6">
+                        <i class="fas fa-hands-helping strategic-icon brand-pink"></i>
+                        <h3 class="text-2xl font-bold brand-pink mb-3">Strengthen Community Trust and Engagement</h3>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-white p-4 rounded-lg border-l-4 border-pink-400">
+                            <h4 class="font-semibold text-gray-800 mb-2">
+                                <i class="fas fa-users mr-2 brand-pink"></i>
+                                Resident Advisory Councils
+                            </h4>
+                            <p class="text-sm text-gray-700">Formalize spaces where residents co-design programs, ensuring cultural competence and relevance.</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border-l-4 border-pink-400">
+                            <h4 class="font-semibold text-gray-800 mb-2">
+                                <i class="fas fa-church mr-2 brand-pink"></i>
+                                Faith & Community Leader Partnerships
+                            </h4>
+                            <p class="text-sm text-gray-700">Engage pastors, block club presidents, and other trusted figures to spread health messages and reduce medical mistrust.</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border-l-4 border-pink-400">
+                            <h4 class="font-semibold text-gray-800 mb-2">
+                                <i class="fas fa-user-graduate mr-2 brand-pink"></i>
+                                Youth Health Ambassadors
+                            </h4>
+                            <p class="text-sm text-gray-700">Train high school and college students as peer health educators who can influence their families and neighborhoods.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Initiative 4: Data-Driven Strategies -->
+                <div class="stat-card orange-border p-8 rounded-lg card-shadow bg-gradient-to-br from-orange-50 to-white">
+                    <div class="text-center mb-6">
+                        <i class="fas fa-chart-bar strategic-icon brand-orange"></i>
+                        <h3 class="text-2xl font-bold brand-orange mb-3">Data-Driven Health Equity Strategies</h3>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-white p-4 rounded-lg border-l-4 border-orange-400">
+                            <h4 class="font-semibold text-gray-800 mb-2">
+                                <i class="fas fa-map-marked-alt mr-2 brand-orange"></i>
+                                Community Health Dashboards
+                            </h4>
+                            <p class="text-sm text-gray-700">Use aggregated, de-identified data to map chronic disease prevalence, ER usage, and access gaps across South Side neighborhoods.</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border-l-4 border-orange-400">
+                            <h4 class="font-semibold text-gray-800 mb-2">
+                                <i class="fas fa-balance-scale mr-2 brand-orange"></i>
+                                Equity-Focused Metrics
+                            </h4>
+                            <p class="text-sm text-gray-700">Measure progress not just by volume of services, but by reduction in disparities (e.g., lowering maternal mortality among Black women, narrowing diabetes control gaps).</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border-l-4 border-orange-400">
+                            <h4 class="font-semibold text-gray-800 mb-2">
+                                <i class="fas fa-share-alt mr-2 brand-orange"></i>
+                                Cross-Sector Data Sharing
+                            </h4>
+                            <p class="text-sm text-gray-700">Develop partnerships with housing, education, and public safety to connect data and provide a fuller picture of resident health needs.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Initiative 5: Policy & Advocacy -->
+                <div class="stat-card yellow-border p-8 rounded-lg card-shadow bg-gradient-to-br from-yellow-50 to-white">
+                    <div class="text-center mb-6">
+                        <i class="fas fa-gavel strategic-icon brand-yellow"></i>
+                        <h3 class="text-2xl font-bold brand-yellow mb-3">Policy & Advocacy for Structural Change</h3>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-white p-4 rounded-lg border-l-4 border-yellow-400">
+                            <h4 class="font-semibold text-gray-800 mb-2">
+                                <i class="fas fa-shield-alt mr-2 brand-yellow"></i>
+                                Medicaid & Safety Net Enhancements
+                            </h4>
+                            <p class="text-sm text-gray-700">Advocate for expanded Medicaid coverage and stronger safety net funding to sustain care for uninsured and underinsured residents.</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border-l-4 border-yellow-400">
+                            <h4 class="font-semibold text-gray-800 mb-2">
+                                <i class="fas fa-building mr-2 brand-yellow"></i>
+                                Infrastructure Investments
+                            </h4>
+                            <p class="text-sm text-gray-700">Work with city/state government to direct resources toward South Side hospitals, clinics, and community health centers.</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border-l-4 border-yellow-400">
+                            <h4 class="font-semibold text-gray-800 mb-2">
+                                <i class="fas fa-clipboard-list mr-2 brand-yellow"></i>
+                                Health in All Policies Approach
+                            </h4>
+                            <p class="text-sm text-gray-700">Push for policies where city planning, transportation, and housing decisions must consider health equity impacts.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Initiative 6: Sustainable Partnerships -->
+                <div class="stat-card green-border p-8 rounded-lg card-shadow bg-gradient-to-br from-green-50 to-white">
+                    <div class="text-center mb-6">
+                        <i class="fas fa-network-wired strategic-icon brand-green"></i>
+                        <h3 class="text-2xl font-bold brand-green mb-3">Build Sustainable Collaborative Partnerships</h3>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-white p-4 rounded-lg border-l-4 border-green-400">
+                            <h4 class="font-semibold text-gray-800 mb-2">
+                                <i class="fas fa-anchor mr-2 brand-green"></i>
+                                Healthcare Anchor Collaboratives
+                            </h4>
+                            <p class="text-sm text-gray-700">Partner with large South Side hospitals and universities as "anchor institutions" to invest in local hiring, procurement, and community wealth building.</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border-l-4 border-green-400">
+                            <h4 class="font-semibold text-gray-800 mb-2">
+                                <i class="fas fa-microchip mr-2 brand-green"></i>
+                                Technology & Innovation Partnerships
+                            </h4>
+                            <p class="text-sm text-gray-700">Leverage digital tools, remote monitoring, and cybersecurity protections to modernize community health infrastructure.</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border-l-4 border-green-400">
+                            <h4 class="font-semibold text-gray-800 mb-2">
+                                <i class="fas fa-graduation-cap mr-2 brand-green"></i>
+                                Continuous Learning
+                            </h4>
+                            <p class="text-sm text-gray-700">Partner with academic institutions to evaluate program outcomes and publish findings, showcasing South Side as a national model for equity-focused care.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Healthcare Partners -->
+    <section class="py-12 bg-white">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center mb-8 brand-purple">Healthcare Partners</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="bg-gray-50 p-4 rounded-lg card-shadow text-center">
+                    <i class="fas fa-hospital brand-teal mb-2 text-2xl"></i>
+                    <h3 class="font-semibold">Advocate Trinity Hospital</h3>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg card-shadow text-center">
+                    <i class="fas fa-clinic-medical brand-purple mb-2 text-2xl"></i>
+                    <h3 class="font-semibold">Beloved Community Health Center</h3>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg card-shadow text-center">
+                    <i class="fas fa-user-md brand-pink mb-2 text-2xl"></i>
+                    <h3 class="font-semibold">Chicago Family Health Center</h3>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg card-shadow text-center">
+                    <i class="fas fa-pills brand-orange mb-2 text-2xl"></i>
+                    <h3 class="font-semibold">Cottage Grove Pharmacy</h3>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg card-shadow text-center">
+                    <i class="fas fa-heart brand-yellow mb-2 text-2xl"></i>
+                    <h3 class="font-semibold">Esperanza Health Centers</h3>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg card-shadow text-center">
+                    <i class="fas fa-users-cog brand-green mb-2 text-2xl"></i>
+                    <h3 class="font-semibold">Friends Family Health Center</h3>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg card-shadow text-center">
+                    <i class="fas fa-hospital-alt brand-teal mb-2 text-2xl"></i>
+                    <h3 class="font-semibold">Insight Hospital and Medical Center</h3>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg card-shadow text-center">
+                    <i class="fas fa-door-open brand-purple mb-2 text-2xl"></i>
+                    <h3 class="font-semibold">Open Door Health Center</h3>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg card-shadow text-center">
+                    <i class="fas fa-cross brand-pink mb-2 text-2xl"></i>
+                    <h3 class="font-semibold">Saint Bernard Hospital</h3>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg card-shadow text-center">
+                    <i class="fas fa-stethoscope brand-orange mb-2 text-2xl"></i>
+                    <h3 class="font-semibold">TCA Health</h3>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg card-shadow text-center">
+                    <i class="fas fa-university brand-yellow mb-2 text-2xl"></i>
+                    <h3 class="font-semibold">University of Chicago Medicine</h3>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg card-shadow text-center">
+                    <i class="fas fa-home-alt brand-green mb-2 text-2xl"></i>
+                    <h3 class="font-semibold">VNA Health Care</h3>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg card-shadow text-center">
+                    <i class="fas fa-prescription-bottle brand-teal mb-2 text-2xl"></i>
+                    <h3 class="font-semibold">Walgreens</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Governance Structure -->
+    <section class="py-12 bg-gray-100">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center mb-8 brand-green">Governance Structure</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="text-center p-6 bg-white rounded-lg card-shadow">
+                    <i class="fas fa-user-tie icon-large brand-teal mb-4"></i>
+                    <h3 class="text-lg font-semibold">Board Chair</h3>
+                    <p class="text-gray-700">Michelle Blakely</p>
+                    <p class="text-sm text-gray-500">Advocate Trinity</p>
+                </div>
+                <div class="text-center p-6 bg-white rounded-lg card-shadow">
+                    <i class="fas fa-user-tie icon-large brand-purple mb-4"></i>
+                    <h3 class="text-lg font-semibold">Vice Chair</h3>
+                    <p class="text-gray-700">Margie Johnson</p>
+                    <p class="text-sm text-gray-500">Beloved</p>
+                </div>
+                <div class="text-center p-6 bg-white rounded-lg card-shadow">
+                    <i class="fas fa-file-alt icon-large brand-pink mb-4"></i>
+                    <h3 class="text-lg font-semibold">Secretary Treasurer</h3>
+                    <p class="text-gray-700">Christa Hamilton</p>
+                    <p class="text-sm text-gray-500">UCAN</p>
+                </div>
+                <div class="text-center p-6 bg-white rounded-lg card-shadow">
+                    <i class="fas fa-briefcase icon-large brand-orange mb-4"></i>
+                    <h3 class="text-lg font-semibold">CEO</h3>
+                    <p class="text-gray-700">Kimberly Hobson</p>
+                    <p class="text-sm text-gray-500">SSHCO</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Data Sources -->
+    <section class="py-8 bg-white">
+        <div class="container mx-auto px-6">
+            <h2 class="text-2xl font-bold text-center mb-6 brand-teal">Data Sources</h2>
+            <div class="text-center space-y-2 text-sm text-gray-600">
+                <p>Chicago Department of Public Health (CDPH) | American Medical Association</p>
+                <p>Illinois Health and Family Services (HFS) | Chicago Health Atlas</p>
+                <p>Healthcare Cost and Utilization Project (HCUP) | National Vital Statistics System</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="gradient-bg text-white py-6">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-sm opacity-90">
+                Dashboard created by Guy Fuller, President and CEO of ALLSTAR Partners
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // ZIP Code Demographics Chart with Community Names
+        const zipData = [
+            { zip: '60609', community: 'New City', population: 35000 },
+            { zip: '60615', community: 'Hyde Park', population: 28000 },
+            { zip: '60616', community: 'Near South Side', population: 19000 },
+            { zip: '60617', community: 'South Shore', population: 52000 },
+            { zip: '60619', community: 'Auburn Gresham', population: 54000 },
+            { zip: '60620', community: 'Washington Heights', population: 42000 },
+            { zip: '60621', community: 'Englewood', population: 38000 },
+            { zip: '60628', community: 'Roseland', population: 35000 },
+            { zip: '60629', community: 'West Lawn', population: 83000 },
+            { zip: '60636', community: 'Oakland', population: 28000 },
+            { zip: '60637', community: 'Grand Boulevard', population: 47000 },
+            { zip: '60649', community: 'South Shore East', population: 52000 },
+            { zip: '60653', community: 'Woodlawn', population: 23000 },
+            { zip: '60827', community: 'Burnside', population: 15000 },
+            { zip: '60643', community: 'Morgan Park', population: 41000 }
+        ];
+
+        const labels = zipData.map(item => [item.zip, item.community]);
+        const populations = zipData.map(item => item.population);
+
+        const ctx = document.getElementById('zipCodeChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Population',
+                    data: populations,
+                    backgroundColor: [
+                        '#14b8a6', '#8b5cf6', '#ec4899', '#f97316', '#eab308', '#22c55e',
+                        '#14b8a6', '#8b5cf6', '#ec4899', '#f97316', '#eab308', '#22c55e',
+                        '#14b8a6', '#8b5cf6', '#ec4899'
+                    ],
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Population Distribution Across SSHCO Service Area',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: function(context) {
+                                const index = context[0].dataIndex;
+                                return zipData[index].zip + ' - ' + zipData[index].community;
+                            },
+                            label: function(context) {
+                                return 'Population: ' + context.parsed.y.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString();
+                            }
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 0
+                        }
+                    }
+                }
+            }
+        });
+
+        // Hardship Index Comparison Chart
+        const hardshipCtx = document.getElementById('hardshipChart').getContext('2d');
+        new Chart(hardshipCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Affluent Areas', 'National Average', 'Chicago Average', 'SSHCO Communities'],
+                datasets: [{
+                    label: 'Hardship Index Score',
+                    data: [11, 42, 58, 80.5],
+                    backgroundColor: [
+                        '#22c55e',
+                        '#eab308', 
+                        '#f97316',
+                        '#dc2626'
+                    ],
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Hardship Index Comparison (Higher Scores = Greater Hardship)',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label + ': ' + context.parsed.y;
+                                if (context.label === 'SSHCO Communities') {
+                                    label += ' (Range: 70-91)';
+                                } else if (context.label === 'Affluent Areas') {
+                                    label += ' (Range: 5-17)';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Hardship Score (0-100)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Geographic Areas'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
